@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+import sys
+
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+
+    product, qty = line.split()
+    print(product + "\t" + qty)
+
+
+#!/usr/bin/env python3
+import sys
+
+current = None
+total = 0
+
+for line in sys.stdin:
+    line = line.strip()
+    product, qty = line.split("\t")
+    qty = int(qty)
+
+    if product == current:
+        total += qty
+    else:
+        if current is not None:
+            print(current + "\t" + str(total))
+        current = product
+        total = qty
+
+if current is not None:
+    print(current + "\t" + str(total))
