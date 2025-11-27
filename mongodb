@@ -1,0 +1,47 @@
+from pymongo import MongoClient
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Connect to MongoDB
+client = MongoClient("mongodb://localhost:27017/")
+db = client["BDA_Lab"]
+sales = db["Sales"]
+
+# 2. Sample data
+data = [
+    {"product": "Laptop",  "price": 50000, "quantity": 2},
+    {"product": "Phone",   "price": 25000, "quantity": 3},
+    {"product": "Tablet",  "price": 30000, "quantity": 1},
+    {"product": "Laptop",  "price": 50000, "quantity": 1},
+    {"product": "Phone",   "price": 25000, "quantity": 1},
+]
+
+sales.delete_many({})
+sales.insert_many(data)
+
+# 3. Aggregation: total sales amount per product
+pipeline = [
+    {"$project": {
+        "product": 1,
+        "total_amount": {"$multiply": ["$price", "$quantity"]}
+    }},
+    {"$group": {
+        "_id": "$product",
+        "total_sales": {"$sum": "$total_amount"}
+    }}
+]
+
+result = list(sales.aggregate(pipeline))
+print("Sales Report:")
+for doc in result:
+    print(doc)
+
+# 4. Plot using pandas + matplotlib
+df = pd.DataFrame(result)
+df.rename(columns={"_id": "product"}, inplace=True)
+
+plt.bar(df["product"], df["total_sales"])
+plt.xlabel("Product")
+plt.ylabel("Total Sales Amount")
+plt.title("Sales Report")
+plt.show()
