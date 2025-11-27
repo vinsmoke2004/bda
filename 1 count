@@ -1,0 +1,25 @@
+map
+#!/usr/bin/env python3
+import sys
+
+for line in sys.stdin:
+    for word in line.strip().split():
+        print(word + "\t1")
+
+
+red
+#!/usr/bin/env python3
+import sys
+
+counts = {}
+
+for line in sys.stdin:
+    word, num = line.strip().split("\t")
+    num = int(num)
+    if word in counts:
+        counts[word] += num
+    else:
+        counts[word] = num
+
+for w in counts:
+    print(w + "\t" + str(counts[w]))
